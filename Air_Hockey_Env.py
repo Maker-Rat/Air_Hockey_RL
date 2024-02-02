@@ -33,6 +33,8 @@ MAX_SPEED, PADDLE_SPEED, MIN_SPEED = 6, 4, 0.1
 SCREEN_WIDTH = 380
 SCREEN_HEIGHT = 800
 
+SCORER = 0
+
 
 def str_dict(dic):
     return "%s: %d, %s: %d" % (HOME, dic[HOME], AWAY, dic[AWAY])
@@ -48,7 +50,6 @@ class AirHockeyEnv(gym.Env):
 
         self.screen_width = SCREEN_WIDTH
         self.screen_height = SCREEN_HEIGHT
-        self.score = START_SCORE
 
         self.velocities = [-4, -2, 0, 2, 4]
         self.actions = []
@@ -67,8 +68,10 @@ class AirHockeyEnv(gym.Env):
         if self.root is not None:
             self.root.destroy()  # Destroy the existing Tkinter window if it exists
 
+        
         self.root = tk.Tk()
         self.home = Home(self.root, (self.screen_width, self.screen_height))
+
         self.state = self.get_state()
 
         #self.root.after(10, self.step)
@@ -80,29 +83,42 @@ class AirHockeyEnv(gym.Env):
     def step(self, action):
         self.home.p2.vx, self.home.p2.vy = self.actions[action]
 
-        # print("Action:", action)
-
         self.home.update()
         state = self.get_state()
 
+
         # Modify the reward and done criteria based on your game logic
         reward = 0.0
-        if self.home.score[HOME] > self.score[HOME]:
-            reward = -1000
-            done = True
-        elif self.home.score[AWAY] > self.score[AWAY]:
-            reward = 1000
-            done = True
-        else:
+        # if self.home.score[HOME] > self.score[HOME]:
+        #     print("yup")
+        #     reward = -1000
+        #     done = True
+        # elif self.home.score[AWAY] > self.score[AWAY]:
+        #     reward = 1000
+        #     done = True
+        # else:
+        #     if (self.home.puck.y/self.screen_height) > 0.5:
+        #         reward = -1
+        #     done = False
+
+        if self.home.scorer == 0:
             if (self.home.puck.y/self.screen_height) > 0.5:
                 reward = -1
             done = False
 
-        self.score = self.home.score
+        elif self.home.scorer == 1:
+            reward = -1000
+            done = True
+            self.home.reset()
+        
+        elif self.home.scorer == 2:
+            reward = 1000
+            done = True
+            self.home.reset()
 
-        #self.root.update_idletasks()  # Manually update the Tkinter window in a non-blocking way
+        # self.root.update_idletasks()  # Manually update the Tkinter window in a non-blocking way
 
-        return state, reward, done, {}
+        return state, reward, done, done, {}
 
     def render(self, mode='human'):
         # Rendering is done through the Tkinter GUI, so no specific render function needed
@@ -215,7 +231,7 @@ class Puck(object):
         self.screen = self.background.get_screen()
         self.x, self.y = self.screen[0]/2, self.screen[1]/2
         self.can, self.radius = canvas, 16 
-        self.vx, self.vy = 1, -1
+        self.vx, self.vy = random.randrange(-5, 5), random.randrange(-5, 5)
         self.friction = 0.99
         self.cushion = self.radius*0.05
         self.cooldown = 0
@@ -388,6 +404,7 @@ class Home(object):
         
         master.bind("<Return>", self.reset)
         master.bind("<r>", self.reset)
+        self.scorer = 0
         
         master.title(str_dict(score))
         
@@ -409,12 +426,16 @@ class Home(object):
         self.p2.update(state)
         if not self.puck.in_goal():
             self.frame.after(int(1/FPS*1000), self.update) 
+            self.scorer = 0
         else:
             winner = HOME if self.puck.in_goal() == AWAY else AWAY
             self.update_score(winner)
             
     def update_score(self, winner):
         self.score[winner] += 1
-        self.reset()
+        if winner == HOME:
+            self.scorer = 1
+        else:
+            self.scorer = 2
 
             
