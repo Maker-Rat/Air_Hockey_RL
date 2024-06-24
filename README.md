@@ -13,7 +13,7 @@ The initial goal for the project was to implement RL on the environment and comp
   - -1000 for having a goal scored against it
   - -1 for every frame the puck is in the agent's half
 
-This resulted in the agent learning decently well how to attack the puck [as soon as it enters it half](/RL_vs_NN.mp4). It's defensive capabilities however are next to none.
+This resulted in the agent learning decently well how to attack the puck [as soon as it enters it's half](/RL_vs_NN.mp4). It's defensive capabilities however are next to none.
 
 
 ## Further Work
