@@ -7,8 +7,18 @@ Repo for Reinforcement Learning based implementation in Air Hockey environment.
 The idea for this project came up as a fun interactive demonstration for our college's technical fest Quark '24. We were able to somewhat implement a Neural Network agent trained using imitation learning techniques. The expert for this approach was the computer of a mobile based air hockey game. Data was extracted from a half-hour long video playthrough of the game through computer vision techniques. The agent was trained using a DNN in keras. This was then deployed on hardware built completely in-house which used a stepper motor actuated gantry to actuate the paddle and a single camera to gather relevant information.
 
 
+https://github.com/Maker-Rat/Air_Hockey_RL/assets/118165773/75870cd7-d949-4124-993e-8f3d2c6bb7cd
+
+
+
 ## Current Progress
 The initial goal for the project was to implement RL on the environment and compare it with the neural network opponent. Due to limited time during Quark we were unable to do this. I then took up this project again this summer to try and make some progress on it. I was able to create a much better and reliable environment than before to train my agent. I then trained the agent using a double DQN strategyb over 10,000 episodes. The setup used a simple reward function defined as follows:
+
+![WhatsApp Image 2024-06-12 at 11 02 00 AM](https://github.com/Maker-Rat/Air_Hockey_RL/assets/118165773/a08ee77b-d747-46db-8d67-4512637e569f)
+
+![ezgif-5-c39e636792](https://github.com/Maker-Rat/Air_Hockey_RL/assets/118165773/c41b8e5a-7927-4ca8-8e28-2e08bba6be24)
+
+
   - 1000 for scoring a goal
   - -1000 for having a goal scored against it
   - -1 for every frame the puck is in the agent's half
